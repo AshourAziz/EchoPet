@@ -30,12 +30,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.dsh105.commodus.config.YAMLConfig;
 import com.dsh105.echopet.compat.api.plugin.EchoPet;
-import com.dsh105.echopet.compat.api.util.Version;
 
 /**
  * Most of this stuff is from my Commodus library
  */
 public class UUIDMigration {
+
+	private static Boolean supportsUUID = null;
 
     /**
      * Returns whether the server version currently running primarily uses UUIDs instead of player names
@@ -45,12 +46,13 @@ public class UUIDMigration {
      * @return true if the server supports the switch to UUIDs
      */
     public static boolean supportsUuid() {
+		if(supportsUUID != null) return supportsUUID;
         try {
             Bukkit.class.getDeclaredMethod("getPlayer", UUID.class);
+			return supportsUUID = true;
         } catch (NoSuchMethodException e) {
-            return false;
+			return supportsUUID = false;
         }
-        return new Version().isCompatible("1.7.5");
     }
 
     /**
