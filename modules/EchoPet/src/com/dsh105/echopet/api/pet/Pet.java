@@ -357,7 +357,7 @@ public abstract class Pet implements IPet{
             new BukkitRunnable() {
                 @Override
                 public void run() {
-					getCraftPet().setPassenger(getOwner());// Can't do nms method here due to requiring a 2nd update which I don't feel lik doing.
+					getCraftPet().setPassenger(getOwner());// Can't do nms method here due to requiring a 2nd update which I don't feel like doing.
                     ownerIsMounting = false;
                     if (getEntityPet() instanceof IEntityNoClipPet) {
                         ((IEntityNoClipPet) getEntityPet()).noClip(false);

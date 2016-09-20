@@ -43,10 +43,10 @@ import com.dsh105.echopet.compat.api.entity.PetType;
 import com.dsh105.echopet.compat.api.event.PetInteractEvent;
 import com.dsh105.echopet.compat.api.plugin.EchoPet;
 import com.dsh105.echopet.compat.api.util.Lang;
+import com.dsh105.echopet.compat.api.util.Perm;
 import com.dsh105.echopet.compat.api.util.ReflectionUtil;
 import com.dsh105.echopet.compat.api.util.WorldUtil;
 import com.dsh105.echopet.compat.api.util.menu.SelectorLayout;
-import com.dsh105.echopet.compat.api.util.Perm;
 
 public class PetOwnerListener implements Listener {
 
@@ -97,35 +97,33 @@ public class PetOwnerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
-        final Player p = event.getPlayer();
-        final IPet pi = EchoPet.getManager().getPet(p);
-		if(!event.isCancelled()){// No need to update unless we actually teleported.
-			Iterator<IPet> i = EchoPet.getManager().getPets().iterator();
-			while(i.hasNext()){
-				IPet pet = i.next();
-				if(pet.getEntityPet() instanceof IEntityPacketPet && ((IEntityPacketPet) pet.getEntityPet()).hasInititiated()){
-					if(GeometryUtil.getNearbyEntities(event.getTo(), 50).contains(pet)){
-						((IEntityPacketPet) pet.getEntityPet()).updatePosition();
-					}
+		final Player p = event.getPlayer();
+		final IPet pi = EchoPet.getManager().getPet(p);
+		Iterator<IPet> i = EchoPet.getManager().getPets().iterator();
+		while(i.hasNext()){
+			IPet pet = i.next();
+			if(pet.getEntityPet() instanceof IEntityPacketPet && ((IEntityPacketPet) pet.getEntityPet()).hasInititiated()){
+				if(GeometryUtil.getNearbyEntities(event.getTo(), 50).contains(pet)){
+					((IEntityPacketPet) pet.getEntityPet()).updatePosition();
 				}
 			}
-        }
-        if (pi != null) {
-            if (!WorldUtil.allowPets(event.getTo())) {
-                Lang.sendTo(p, Lang.PETS_DISABLED_HERE.toString().replace("%world%", StringUtil.capitalise(event.getTo().getWorld().getName())));
-                EchoPet.getManager().saveFileData("autosave", pi);
-                EchoPet.getSqlManager().saveToDatabase(pi, false);
-                EchoPet.getManager().removePet(pi, false);
+		}
+		if(pi != null){
+			if(!WorldUtil.allowPets(event.getTo())){
+				Lang.sendTo(p, Lang.PETS_DISABLED_HERE.toString().replace("%world%", StringUtil.capitalise(event.getTo().getWorld().getName())));
+				EchoPet.getManager().saveFileData("autosave", pi);
+				EchoPet.getSqlManager().saveToDatabase(pi, false);
+				EchoPet.getManager().removePet(pi, false);
 			}else{
 				pi.setAsHat(false);
 				if(event.getCause() != TeleportCause.UNKNOWN){// This will probably cause issues.. I don't know why more causes don't exist.
 					pi.ownerRidePet(false);
 					pi.teleport(event.getTo());
 				}
-            }
-        }
+			}
+		}
     }
 
     @EventHandler
