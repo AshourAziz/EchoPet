@@ -17,10 +17,7 @@
 
 package com.dsh105.echopet.compat.api.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -139,25 +136,38 @@ public class ConfigOptions extends Options {
         set("worldguard.regions.allowByDefault", true);
         set("worldguard.regionEnterCheck", true);
 
-        String[] trailInfo = {
-        		"Test is the particle trail name", 
-        		"ParticleName is the name of the particle to display.",
-        		"Interval - Time in ticks to display the particle",
-        		"Count - Amount of particles to display",
-        		"X, Y, Z - Offset from the pets location. Particle will display on that point",
-		        "X, Y, Z Offset - From the pets location to the x,y,z offset the particle will display."};
-		set("trails.test.particleName", "FLAME", trailInfo);
-		set("trails.test.permission", "echopet.pet.trail.test");
-		set("trails.test.interval", 1);
-		set("trails.test.speed", 0);
-		set("trails.test.count", 2);
-		set("trails.test.speed", 0);
-		set("trails.test.x", 0);
-		set("trails.test.y", 0);
-		set("trails.test.z", 0);
-		set("trails.test.xOffset", 0);
-		set("trails.test.yOffset", 0);
-		set("trails.test.zOffset", 0);
+        if(config.getConfigurationSection("trails") == null){
+	        String[] trailInfo = {
+	        		"Test is the particle trail name", 
+	        		"ParticleName is the name of the particle to display. Required.",
+			        "canToggle is the ability to disable toggling of the trail via command. Used for subtrails. Optional, defaults to true.",
+	        		"SubTrails is a list of trails which will be activate when the main one is. Optional.",
+			        "Interval - Time in ticks to display the particle. Optional, defaults to 0.",
+	        		"Count - Amount of particles to display",
+			        "X, Y, Z - Offset from the pets location. Offset from the pets locations. Optional, defaults to 0.",
+			        "X, Y, Z Offset - From the pets location(including x,y,z) to the x,y,z offset the particles will display. Optional, defaults to 0."};
+			set("trails.test.particleName", "FLAME", trailInfo);
+			set("trails.test.permission", "echopet.pet.trail.test");
+			set("trails.test.subtrails", Arrays.asList("test2"));
+			set("trails.test.interval", 1);
+			set("trails.test.speed", 0);
+			set("trails.test.count", 2);
+			set("trails.test.speed", 0);
+			set("trails.test.x", 0);
+			set("trails.test.y", 0);
+			set("trails.test.z", 0);
+			set("trails.test.xOffset", 0);
+			set("trails.test.yOffset", 0);
+			set("trails.test.zOffset", 0);
+			//
+			set("trails.test2.particleName", "splash");
+			set("trails.test2.permission", "echopet.pet.trail.test2");
+			set("trails.test2.canToggle", false);
+			set("trails.test2.interval", 2);
+			set("trails.test2.speed", 1);
+			set("trails.test2.count", 5);
+			set("trails.test2.y", 3);
+        }
 
         set("petSelector.allowDrop", true);
         set("petSelector.showDisabledPets", true);
