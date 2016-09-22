@@ -32,6 +32,8 @@ public interface IPet{
 
 	public IEntityPet spawnPet(Player owner);
 
+	public boolean isSpawned();
+
     public IEntityPet getEntityPet();
 
     public Creature getCraftPet();
@@ -68,7 +70,10 @@ public interface IPet{
 
 	public void removeRider(boolean makeSound, boolean makeParticles);
 
-	public void removePet(boolean makeSound, boolean makeParticles);
+	/**
+	 * @return The pets rider
+	 */
+	public IPet removePet(boolean makeSound, boolean makeParticles);
 
     public boolean teleportToOwner();
 
@@ -83,6 +88,8 @@ public interface IPet{
 	public void setAsHat(boolean flag);
 
     public IPet createRider(final PetType pt, boolean sendFailMessage);
+
+	public void setRider(IPet rider);
 
 	public InventoryView getInventoryView();
 

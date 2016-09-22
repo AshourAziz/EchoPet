@@ -97,7 +97,7 @@ public class PetOwnerListener implements Listener {
         }
     }
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(final PlayerTeleportEvent event) {
 		final Player p = event.getPlayer();
 		final IPet pi = EchoPet.getManager().getPet(p);
@@ -190,26 +190,16 @@ public class PetOwnerListener implements Listener {
 
             // delayed loading if the player has at least 1 perm
             final boolean sendMessage = EchoPet.getConfig().getBoolean("sendLoadMessage", true);
-            new BukkitRunnable()
-            {
-
+			new BukkitRunnable(){
                 @Override
-                public void run()
-                {
-                    if (p != null && p.isOnline())
-                    {
+				public void run(){
+					if(p != null && p.isOnline()){
                         IPet pet = EchoPet.getManager().loadPets(p, true, sendMessage, false);
-                        if (pet != null)
-                        {
-                            if (EchoPet.getPlugin().getVanishProvider().isVanished(p))
-                            {
-                                pet.getEntityPet().setShouldVanish(true);
-                                pet.getEntityPet().setInvisible(true);
-                            }
+						if(pet != null){
+							pet.spawnPet(p);
                         }
                     }
                 }
-
             }.runTaskLater(EchoPet.getPlugin(), 20);
 
             // we're searching for at least 1 perm... (wouldn't want to load pet for every permission since player can have only 1 pet at the time)
@@ -254,20 +244,19 @@ public class PetOwnerListener implements Listener {
         }.runTaskLater(EchoPet.getPlugin(), 20L);
     }
 
-    @EventHandler
+	@EventHandler(ignoreCancelled = true)
     public void onWorldChange(PlayerChangedWorldEvent event) {
         final Player p = event.getPlayer();
         final IPet pi = EchoPet.getManager().getPet(p);
         if (pi != null) {
-            EchoPet.getManager().saveFileData("autosave", pi);
-            EchoPet.getSqlManager().saveToDatabase(pi, false);
-            EchoPet.getManager().removePet(pi, false);
+			final IPet rider = pi.removePet(false, false);
             new BukkitRunnable() {
-
                 @Override
                 public void run() {
-					IPet pet = EchoPet.getManager().loadPets(p, true, false, false);
-					if(pet != null) pet.spawnPet(p);
+					if(pi != null){
+						pi.spawnPet(p);
+						if(rider != null) pi.setRider(rider);
+					}
                 }
 
             }.runTaskLater(EchoPet.getPlugin(), 20L);

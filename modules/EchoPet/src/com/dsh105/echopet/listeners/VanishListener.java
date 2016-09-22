@@ -39,8 +39,6 @@ public class VanishListener implements Listener {
 				EchoPet.getSqlManager().saveToDatabase(pet, false);
 				pet.removePet(false, false);
 			}
-			// pet.getEntityPet().setShouldVanish(event.isVanishing());
-			// pet.getEntityPet().setInvisible(event.isVanishing());
         }
     }
 }

@@ -39,10 +39,6 @@ public interface IEntityPet {
 
     public boolean onInteract(Player p);
 
-    public void setShouldVanish(boolean flag);
-
-    public void setInvisible(boolean flag);
-
     public void setTarget(LivingEntity livingEntity);
 
     public LivingEntity getTarget();

@@ -27,6 +27,7 @@ import com.google.common.base.Optional;
 
 import net.minecraft.server.v1_10_R1.*;
 
+@SuppressWarnings("deprecation") // Fuck you spigot. Yeah lets just deprecate one of the multiple entity classes that will be changed in the 1.11 update.
 @EntitySize(width = 1.4F, height = 1.6F)
 @EntityPetType(petType = PetType.HORSE)
 public class EntityHorsePet extends EntityAgeablePet implements IEntityHorsePet{
