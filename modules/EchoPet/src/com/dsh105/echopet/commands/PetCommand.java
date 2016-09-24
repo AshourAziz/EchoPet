@@ -429,6 +429,7 @@ public class PetCommand implements CommandExecutor {
                             }
                         }
                     }
+					pi.spawnPet((Player) sender);
                     EchoPet.getManager().saveFileData("autosave", pi);
                     EchoPet.getSqlManager().saveToDatabase(pi, false);
                     Lang.sendTo(sender, Lang.CREATE_PET.toString()
