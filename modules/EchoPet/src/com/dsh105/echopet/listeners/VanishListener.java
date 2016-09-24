@@ -34,11 +34,7 @@ public class VanishListener implements Listener {
         IPet pet = EchoPet.getManager().getPet(p);
         if (pet != null) {
 			if(!event.isVanishing()) pet.spawnPet(p);
-			else{
-				EchoPet.getManager().saveFileData("autosave", pet);
-				EchoPet.getSqlManager().saveToDatabase(pet, false);
-				pet.removePet(false, false);
-			}
+			else pet.removePet(false, false);
         }
     }
 }

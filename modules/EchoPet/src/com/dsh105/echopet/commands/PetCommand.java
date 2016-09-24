@@ -158,7 +158,7 @@ public class PetCommand implements CommandExecutor {
                 if (Perm.BASE_TOGGLE.hasPerm(sender, true, false)) {
                     Player player = (Player) sender;
                     IPet p = EchoPet.getManager().getPet(player);
-                    if (p == null) {
+					if(p == null){// no pet hidden, load it.
                         IPet pet = EchoPet.getManager().loadPets(player, false, false, false);
                         if (pet == null) {
                             Lang.sendTo(sender, Lang.NO_HIDDEN_PET.toString());
@@ -166,17 +166,27 @@ public class PetCommand implements CommandExecutor {
                         }
                         if (WorldUtil.allowPets(player.getLocation())) {
                             Lang.sendTo(sender, Lang.SHOW_PET.toString().replace("%type%", StringUtil.capitalise(pet.getPetType().toString())));
+							pet.spawnPet(player);
                             return true;
                         } else {
                             Lang.sendTo(sender, Lang.PETS_DISABLED_HERE.toString().replace("%world%", player.getWorld().getName()));
-                            EchoPet.getManager().removePet(pet, true);
                             return true;
                         }
                     } else {
-                        EchoPet.getManager().saveFileData("autosave", p);
-                        EchoPet.getSqlManager().saveToDatabase(p, false);
-                        EchoPet.getManager().removePet(p, true);
-                        Lang.sendTo(sender, Lang.HIDE_PET.toString());
+						if(p.isSpawned()){
+							p.removePet(false, false);
+							Lang.sendTo(sender, Lang.HIDE_PET.toString());
+						}else{
+							if(WorldUtil.allowPets(player.getLocation())){
+								Lang.sendTo(sender, Lang.SHOW_PET.toString().replace("%type%", StringUtil.capitalise(p.getPetType().toString())));
+								p.spawnPet(player);
+								return true;
+							}else{
+								Lang.sendTo(sender, Lang.PETS_DISABLED_HERE.toString().replace("%world%", player.getWorld().getName()));
+								p.removePet(false, false);
+								return true;
+							}
+						}
                     }
                     return true;
                 } else {
@@ -190,9 +200,7 @@ public class PetCommand implements CommandExecutor {
                         Lang.sendTo(sender, Lang.NO_PET.toString());
                         return true;
                     }
-                    EchoPet.getManager().saveFileData("autosave", pet);
-                    EchoPet.getSqlManager().saveToDatabase(pet, false);
-                    EchoPet.getManager().removePet(pet, true);
+					pet.removePet(false, false);
                     Lang.sendTo(sender, Lang.HIDE_PET.toString());
                     return true;
                 } else {
@@ -202,19 +210,19 @@ public class PetCommand implements CommandExecutor {
                 if (Perm.BASE_SHOW.hasPerm(sender, true, false)) {
                     Player player = (Player) sender;
                     EchoPet.getManager().removePets(player, true);
-                    IPet pet = EchoPet.getManager().loadPets(player, false, false, false);
+					IPet pet = EchoPet.getManager().getPet(player);
+					if(pet == null) pet = EchoPet.getManager().loadPets(player, false, false, false);
                     if (pet == null) {
                         Lang.sendTo(sender, Lang.NO_HIDDEN_PET.toString());
                         return true;
                     }
                     if (WorldUtil.allowPets(player.getLocation())) {
                         Lang.sendTo(sender, Lang.SHOW_PET.toString().replace("%type%", StringUtil.capitalise(pet.getPetType().toString())));
+						pet.spawnPet(player);
                         return true;
                     } else {
                         Lang.sendTo(sender, Lang.PETS_DISABLED_HERE.toString().replace("%world%", player.getWorld().getName()));
-                        if (pet != null) {
-                            EchoPet.getManager().removePet(pet, true);
-                        }
+						pet.removePet(false, false);
                         return true;
                     }
                 } else {
