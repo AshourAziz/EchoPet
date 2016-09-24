@@ -54,6 +54,13 @@ public interface IPet{
 
     public IPet getRider();
 
+	/**
+	 * @return The last despawned rider(Null if no rider, or rider was removed)
+	 */
+	public IPet getLastRider();
+
+	public void setLastRider(IPet lastRider);
+
     public boolean isOwnerInMountingProcess();
 
     public String getPetName();
@@ -70,10 +77,7 @@ public interface IPet{
 
 	public void removeRider(boolean makeSound, boolean makeParticles);
 
-	/**
-	 * @return The pets rider
-	 */
-	public IPet removePet(boolean makeSound, boolean makeParticles);
+	public void removePet(boolean makeSound, boolean makeParticles);
 
     public boolean teleportToOwner();
 

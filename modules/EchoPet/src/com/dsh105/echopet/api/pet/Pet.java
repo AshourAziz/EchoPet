@@ -50,7 +50,7 @@ public abstract class Pet implements IPet{
 	private PetType petType;
 
 	private Object ownerIdentification;
-	private Pet rider;
+	private Pet rider, lastRider;
 	private String name;
 	private ArrayList<PetData> petData = new ArrayList<PetData>();
 	private InventoryView dataMenu;
@@ -93,6 +93,7 @@ public abstract class Pet implements IPet{
 						EchoPet.getManager().setData(this, pd, true);
 					for(Trail t : trails)
 						t.start(this);
+					if(lastRider != null && !lastRider.isSpawned()) lastRider.spawnPet(owner);
 				}
 			}
 		}else{
@@ -103,8 +104,6 @@ public abstract class Pet implements IPet{
 		}
 		return entityPet;
 	}
-
-	public void despawnPet(){}
 
 	@Override
 	public IEntityPet getEntityPet(){
@@ -179,6 +178,11 @@ public abstract class Pet implements IPet{
 	}
 
 	@Override
+	public Pet getLastRider(){
+		return this.lastRider;
+	}
+
+	@Override
 	public String getPetName(){
 		return name;
 	}
@@ -233,8 +237,15 @@ public abstract class Pet implements IPet{
 	}
 
 	@Override
+	public void setLastRider(IPet lastRider){
+		if(lastRider == null) this.lastRider = null;
+		else this.lastRider = (Pet) lastRider;
+	}
+
+	@Override
 	public void removeRider(boolean makeSound, boolean makeParticles){
 		if(rider != null){
+			lastRider = rider;
 			rider.removePet(makeSound, makeParticles);
 			rider = null;
 			EchoPet.getPlugin().getSpawnUtil().removePassenger(getCraftPet());
@@ -242,12 +253,11 @@ public abstract class Pet implements IPet{
 	}
 
 	@Override
-	public IPet removePet(boolean makeSound, boolean makeParticles){
+	public void removePet(boolean makeSound, boolean makeParticles){
 		if(getEntityPet() != null && this.getCraftPet() != null && makeParticles){
 			Particle.CLOUD.builder().at(getLocation()).show();
 			Particle.LAVA_SPARK.builder().at(getLocation()).show();
 		}
-		IPet rider = this.rider;
 		removeRider(makeSound, makeParticles);
 		for(com.dsh105.echopet.compat.api.particle.Trail trail : trails){
 			trail.cancel();
@@ -256,7 +266,6 @@ public abstract class Pet implements IPet{
 			this.getEntityPet().remove(makeSound);
 			this.entityPet = null;
 		}
-		return rider;
 	}
 
 	@Override
@@ -452,7 +461,7 @@ public abstract class Pet implements IPet{
 	}
 
 	public void setRider(IPet newRider){
-		if(!isSpawned()){ return; }
+		if(!isSpawned()) return;
 		if(!EchoPet.getOptions().allowRidersFor(this.getPetType())){
 			Lang.sendTo(this.getOwner(), Lang.RIDERS_DISABLED.toString().replace("%type%", StringUtil.capitalise(this.getPetType().toString())));
 			return;
@@ -463,11 +472,10 @@ public abstract class Pet implements IPet{
 		if(this.rider != null){
 			this.removeRider(true, true);
 		}
-		newRider.spawnPet(getOwner());
+		if(!newRider.isSpawned()) newRider.spawnPet(getOwner());
 		this.rider = (Pet) newRider;
 		this.rider.setRider();
 		EchoPet.getPlugin().getSpawnUtil().setPassenger(0, getCraftPet(), this.rider.getCraftPet());
-
 	}
 
 	public InventoryView getInventoryView(){

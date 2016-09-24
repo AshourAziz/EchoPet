@@ -96,6 +96,7 @@ public class PetManager implements IPetManager {
             saveFileData("autosave", p);
             EchoPet.getSqlManager().saveToDatabase(p, false);
 			p.removePet(true, true);
+			p.setLastRider(null);
             i.remove();
         }
     }
@@ -331,6 +332,7 @@ public class PetManager implements IPetManager {
             IPet p = i.next();
             if (UUIDMigration.getIdentificationFor(player).equals(p.getOwnerIdentification())) {
 				p.removePet(makeDeathSound, true);
+				p.setLastRider(null);
                 i.remove();
             }
         }
@@ -339,6 +341,7 @@ public class PetManager implements IPetManager {
     @Override
     public void removePet(IPet pi, boolean makeDeathSound) {
 		pi.removePet(makeDeathSound, true);
+		pi.setLastRider(null);
         pets.remove(pi);
     }
 

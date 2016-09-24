@@ -445,6 +445,7 @@ public class PetCommand implements CommandExecutor {
                             return true;
                         }
 						pi.removeRider(true, true);
+						pi.setLastRider(null);
                         EchoPet.getManager().saveFileData("autosave", pi);
                         EchoPet.getSqlManager().saveToDatabase(pi, false);
                         Lang.sendTo(sender, Lang.REMOVE_RIDER.toString());

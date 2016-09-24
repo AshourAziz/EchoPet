@@ -249,13 +249,12 @@ public class PetOwnerListener implements Listener {
         final Player p = event.getPlayer();
         final IPet pi = EchoPet.getManager().getPet(p);
         if (pi != null) {
-			final IPet rider = pi.removePet(false, false);
+			pi.removePet(false, false);
             new BukkitRunnable() {
                 @Override
                 public void run() {
 					if(pi != null){
 						pi.spawnPet(p);
-						if(rider != null) pi.setRider(rider);
 					}
                 }
 
