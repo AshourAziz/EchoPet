@@ -100,7 +100,6 @@ public abstract class Pet implements IPet{
 			EchoPet.getManager().saveFileData("autosave", this);
 			EchoPet.getSqlManager().saveToDatabase(this, false);
 			EchoPet.getManager().removePet(this, false);
-			removePet(false, false);
 		}
 		return entityPet;
 	}
@@ -273,16 +272,10 @@ public abstract class Pet implements IPet{
 		if(this.getOwner() == null || this.getOwner().getLocation() == null){
 			EchoPet.getManager().saveFileData("autosave", this);
 			EchoPet.getSqlManager().saveToDatabase(this, false);
-			EchoPet.getManager().removePet(this, false);
-			removePet(false, true);
+			EchoPet.getManager().removePet(this, true);
 			return false;
 		}
-		if(this.getEntityPet() == null || this.getEntityPet().isDead()){
-			EchoPet.getManager().saveFileData("autosave", this);
-			EchoPet.getSqlManager().saveToDatabase(this, false);
-			removePet(false, false);
-			return false;
-		}
+		if(!isSpawned()) return false;
 		Pet rider = getRider();
 		removeRider(false, false);
 		boolean tele = teleport(this.getOwner().getLocation());
@@ -301,19 +294,12 @@ public abstract class Pet implements IPet{
 			EchoPet.getManager().saveFileData("autosave", this);
 			EchoPet.getSqlManager().saveToDatabase(this, false);
 			EchoPet.getManager().removePet(this, false);
-			this.removePet(false, true);
 			return false;
 		}
-		if(this.getEntityPet() == null || this.getEntityPet().isDead()){
-			EchoPet.getManager().saveFileData("autosave", this);
-			EchoPet.getSqlManager().saveToDatabase(this, false);
-			removePet(false, false);
-			spawnPet(getOwner());
-			return false;
-		}
+		if(!isSpawned()) return false;
 		PetTeleportEvent teleportEvent = new PetTeleportEvent(this, this.getLocation(), to);
 		EchoPet.getPlugin().getServer().getPluginManager().callEvent(teleportEvent);
-		if(teleportEvent.isCancelled()){ return false; }
+		if(teleportEvent.isCancelled()) return false;
 		Location l = teleportEvent.getTo();
 		if(l.getWorld() == this.getLocation().getWorld()){
 			if(this.getRider() != null){
@@ -341,7 +327,7 @@ public abstract class Pet implements IPet{
 
 	@Override
 	public void ownerRidePet(boolean flag){
-		if(this.ownerRiding == flag){ return; }
+		if(this.ownerRiding == flag) return;
 
 		this.ownerIsMounting = true;
 
@@ -349,8 +335,7 @@ public abstract class Pet implements IPet{
 			this.setAsHat(false);
 		}
 
-		if(getEntityPet() == null || getCraftPet() == null){
-			removePet(false, false);
+		if(!isSpawned()){
 			this.ownerIsMounting = false;
 			return;
 		}
@@ -388,16 +373,12 @@ public abstract class Pet implements IPet{
 
 	@Override
 	public void setAsHat(boolean flag){
-		if(isHat == flag){
-		return; }
+		if(isHat == flag) return;
 		if(ownerRiding){
 			ownerRidePet(false);
 		}
 
-		if(getEntityPet() == null || getCraftPet() == null){
-			removePet(false, false);
-			return;
-		}
+		if(!isSpawned()) return;
 
 		this.teleportToOwner();
 
