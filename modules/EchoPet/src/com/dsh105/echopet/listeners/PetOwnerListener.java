@@ -113,9 +113,7 @@ public class PetOwnerListener implements Listener {
 		if(pi != null){
 			if(!WorldUtil.allowPets(event.getTo())){
 				Lang.sendTo(p, Lang.PETS_DISABLED_HERE.toString().replace("%world%", StringUtil.capitalise(event.getTo().getWorld().getName())));
-				EchoPet.getManager().saveFileData("autosave", pi);
-				EchoPet.getSqlManager().saveToDatabase(pi, false);
-				EchoPet.getManager().removePet(pi, false);
+				pi.removePet(false, false);
 			}else{
 				pi.setAsHat(false);
 				if(event.getCause() != TeleportCause.UNKNOWN){// This will probably cause issues.. I don't know why more causes don't exist.
@@ -196,7 +194,7 @@ public class PetOwnerListener implements Listener {
 					if(p != null && p.isOnline()){
                         IPet pet = EchoPet.getManager().loadPets(p, true, sendMessage, false);
 						if(pet != null){
-							pet.spawnPet(p);
+							pet.spawnPet(p, false);
                         }
                     }
                 }
@@ -222,12 +220,7 @@ public class PetOwnerListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player p = event.getEntity();
         IPet pet = EchoPet.getManager().getPet(p);
-        if (pet != null) {
-            EchoPet.getManager().saveFileData("autosave", pet);
-            EchoPet.getSqlManager().saveToDatabase(pet, false);
-            EchoPet.getManager().removePet(pet, true);
-            //p.sendMessage(Lang.REMOVE_PET_DEATH.toString());
-        }
+		if(pet != null) pet.removePet(false, false);
     }
 
     @EventHandler
@@ -237,8 +230,8 @@ public class PetOwnerListener implements Listener {
 
             @Override
             public void run() {
-				IPet pet = EchoPet.getManager().loadPets(p, true, false, true);
-				if(pet != null) pet.spawnPet(p);
+				IPet pet = EchoPet.getManager().getPet(p);
+				if(pet != null) pet.spawnPet(p, false);
             }
 
         }.runTaskLater(EchoPet.getPlugin(), 20L);
@@ -253,9 +246,7 @@ public class PetOwnerListener implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-					if(pi != null){
-						pi.spawnPet(p);
-					}
+					if(pi != null) pi.spawnPet(p, false);
                 }
 
             }.runTaskLater(EchoPet.getPlugin(), 20L);

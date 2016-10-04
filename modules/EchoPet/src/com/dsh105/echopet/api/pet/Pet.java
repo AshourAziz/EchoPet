@@ -59,8 +59,8 @@ public abstract class Pet implements IPet{
 	private boolean isRider = false;
 
 	public boolean ownerIsMounting = false;
-	private boolean ownerRiding = false;
-	private boolean isHat = false;
+	private boolean ownerRiding = false, isHat = false;
+	private boolean isHidden = false;
 
 	public Pet(Player owner){
 		if(owner != null){
@@ -81,10 +81,11 @@ public abstract class Pet implements IPet{
 		return entityPet != null;
 	}
 
-	public IEntityPet spawnPet(Player owner){
+	public IEntityPet spawnPet(Player owner, boolean ignoreHidden){
 		if(entityPet != null) return entityPet;
 		if(owner != null){
 			if(!EchoPet.getPlugin().getVanishProvider().isVanished(owner)){// We don't spawn pets at all if the player is vanished due to bounding boxes.
+				if(isHidden && !ignoreHidden) return null;
 				this.entityPet = EchoPet.getPlugin().getSpawnUtil().spawn(this, owner);
 				if(this.entityPet != null){
 					this.applyPetName();
@@ -93,7 +94,7 @@ public abstract class Pet implements IPet{
 						EchoPet.getManager().setData(this, pd, true);
 					for(Trail t : trails)
 						t.start(this);
-					if(lastRider != null && !lastRider.isSpawned()) lastRider.spawnPet(owner);
+					if(lastRider != null && !lastRider.isSpawned()) lastRider.spawnPet(owner, ignoreHidden);
 				}
 			}
 		}else{
@@ -281,7 +282,7 @@ public abstract class Pet implements IPet{
 		boolean tele = teleport(this.getOwner().getLocation());
 		if(tele && rider != null){
 			this.rider = rider;
-			this.rider.spawnPet(getOwner());
+			this.rider.spawnPet(getOwner(), true);
 			EchoPet.getPlugin().getSpawnUtil().setPassenger(0, getCraftPet(), rider.getCraftPet());
 			EchoPet.getSqlManager().saveToDatabase(rider, true);
 		}
@@ -430,7 +431,7 @@ public abstract class Pet implements IPet{
 			}
 			return null;
 		}
-		newRider.spawnPet(getOwner());
+		newRider.spawnPet(getOwner(), false);
 		this.rider = (Pet) newRider;
 		this.rider.setRider();
 		if(getEntityPet() != null && getCraftPet() != null){
@@ -453,7 +454,7 @@ public abstract class Pet implements IPet{
 		if(this.rider != null){
 			this.removeRider(true, true);
 		}
-		if(!newRider.isSpawned()) newRider.spawnPet(getOwner());
+		if(!newRider.isSpawned()) newRider.spawnPet(getOwner(), false);
 		this.rider = (Pet) newRider;
 		this.rider.setRider();
 		EchoPet.getPlugin().getSpawnUtil().setPassenger(0, getCraftPet(), this.rider.getCraftPet());
@@ -467,15 +468,23 @@ public abstract class Pet implements IPet{
 		this.dataMenu = dataMenu;
 	}
 
-	public List<com.dsh105.echopet.compat.api.particle.Trail> getTrails(){
+	public List<Trail> getTrails(){
 		return this.trails;
 	}
 
-	public void addTrail(com.dsh105.echopet.compat.api.particle.Trail trail){
+	public void addTrail(Trail trail){
 		trails.add(trail);
 	}
 
-	public void removeTrail(com.dsh105.echopet.compat.api.particle.Trail trail){
+	public void removeTrail(Trail trail){
 		trails.remove(trail);
+	}
+
+	public boolean isHidden(){
+		return isHidden;
+	}
+
+	public void setHidden(boolean isHidden){
+		this.isHidden = isHidden;
 	}
 }

@@ -166,7 +166,8 @@ public class PetCommand implements CommandExecutor {
                         }
                         if (WorldUtil.allowPets(player.getLocation())) {
                             Lang.sendTo(sender, Lang.SHOW_PET.toString().replace("%type%", StringUtil.capitalise(pet.getPetType().toString())));
-							pet.spawnPet(player);
+							pet.setHidden(false);
+							pet.spawnPet(player, true);
                             return true;
                         } else {
                             Lang.sendTo(sender, Lang.PETS_DISABLED_HERE.toString().replace("%world%", player.getWorld().getName()));
@@ -174,15 +175,18 @@ public class PetCommand implements CommandExecutor {
                         }
                     } else {
 						if(p.isSpawned()){
+							p.setHidden(true);
 							p.removePet(false, false);
 							Lang.sendTo(sender, Lang.HIDE_PET.toString());
 						}else{
 							if(WorldUtil.allowPets(player.getLocation())){
 								Lang.sendTo(sender, Lang.SHOW_PET.toString().replace("%type%", StringUtil.capitalise(p.getPetType().toString())));
-								p.spawnPet(player);
+								p.setHidden(false);
+								p.spawnPet(player, true);
 								return true;
 							}else{
 								Lang.sendTo(sender, Lang.PETS_DISABLED_HERE.toString().replace("%world%", player.getWorld().getName()));
+								p.setHidden(true);
 								p.removePet(false, false);
 								return true;
 							}
@@ -200,6 +204,7 @@ public class PetCommand implements CommandExecutor {
                         Lang.sendTo(sender, Lang.NO_PET.toString());
                         return true;
                     }
+					pet.setHidden(true);
 					pet.removePet(false, false);
                     Lang.sendTo(sender, Lang.HIDE_PET.toString());
                     return true;
@@ -218,10 +223,12 @@ public class PetCommand implements CommandExecutor {
                     }
                     if (WorldUtil.allowPets(player.getLocation())) {
                         Lang.sendTo(sender, Lang.SHOW_PET.toString().replace("%type%", StringUtil.capitalise(pet.getPetType().toString())));
-						pet.spawnPet(player);
+						pet.setHidden(false);
+						pet.spawnPet(player, true);
                         return true;
                     } else {
                         Lang.sendTo(sender, Lang.PETS_DISABLED_HERE.toString().replace("%world%", player.getWorld().getName()));
+						pet.setHidden(true);
 						pet.removePet(false, false);
                         return true;
                     }
@@ -429,7 +436,8 @@ public class PetCommand implements CommandExecutor {
                             }
                         }
                     }
-					pi.spawnPet((Player) sender);
+					pi.setHidden(false);
+					pi.spawnPet((Player) sender, true);
                     EchoPet.getManager().saveFileData("autosave", pi);
                     EchoPet.getSqlManager().saveToDatabase(pi, false);
                     Lang.sendTo(sender, Lang.CREATE_PET.toString()

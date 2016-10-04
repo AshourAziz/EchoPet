@@ -30,7 +30,7 @@ import com.dsh105.echopet.compat.api.particle.Trail;
 
 public interface IPet{
 
-	public IEntityPet spawnPet(Player owner);
+	public IEntityPet spawnPet(Player owner, boolean ignoreHidden);
 
 	public boolean isSpawned();
 
@@ -104,4 +104,8 @@ public interface IPet{
 	public void addTrail(Trail trail);
 
 	public void removeTrail(Trail trail);
+
+	public boolean isHidden();
+
+	public void setHidden(boolean isHidden);
 }

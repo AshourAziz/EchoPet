@@ -33,7 +33,7 @@ public class VanishListener implements Listener {
         Player p = event.getPlayer();
         IPet pet = EchoPet.getManager().getPet(p);
         if (pet != null) {
-			if(!event.isVanishing()) pet.spawnPet(p);
+			if(!event.isVanishing()) pet.spawnPet(p, false);
 			else pet.removePet(false, false);
         }
     }
