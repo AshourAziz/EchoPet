@@ -17,6 +17,7 @@
 
 package com.dsh105.echopet.compat.nms.v1_9_R2.entity.ai;
 
+import com.dsh105.echopet.compat.nms.v1_9_R2.entity.type.EntityEnderDragonPet;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 
 import com.dsh105.echopet.compat.api.ai.APetGoalFollowOwner;
@@ -120,7 +121,7 @@ public class PetGoalFollowOwner extends APetGoalFollowOwner {
 			}*/
 
             double speed = 0.6F;
-            if (this.pet.h(owner) > (this.teleportDistance) && ((CraftPlayer) this.pet.getPlayerOwner()).getHandle().onGround) {
+            if (!(this.pet instanceof EntityEnderDragonPet) && this.pet.h(owner) > (this.teleportDistance) && ((CraftPlayer) this.pet.getPlayerOwner()).getHandle().onGround || this.pet.getPlayerOwner().isInsideVehicle()) {
                 this.pet.getPet().teleportToOwner();
                 return;
             }
